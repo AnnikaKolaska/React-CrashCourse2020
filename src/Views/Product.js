@@ -1,41 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom'
+import Loader from '../Components/Loader'
 
 function Product(){
     const { id } = useParams
     const url = `https://5e8dd95322d8cd0016a79b97.mockapi.io/api/v1/products/${id}`
-    const [product, setProduct] = useState(null)
+    const [product, setProduct] = useState({
+        loading: false,
+        data: null
+    })
 
     let content = null
 
     useEffect(() => {
+        setProduct({
+            loading: true,
+            data: null
+        })
         axios.get(url)
             .then(response => {
-                setProduct(response.data)
+                setProduct({
+                    loading: false,
+                    data: response.data
+                })
             })
     }, [url])
 
-    
-    if(product){   
+    if(product.loading){
+        content = <Loader />
+    }
+
+    if(product.data){   
         content = 
         <div>
             <div>
                 <h1 className="text-2xl font-bold mb-3">
-                    {product.name}
+                    {product.data.name}
                 </h1>
             </div>
             <div>
                 <img
-                    src={product.images[0].imageUrl}
-                    alt={product.name}
+                    src={product.data.images[0].imageUrl}
+                    alt={product.data.name}
                 />
             </div>
             <div className="font-bold text-xl mb-3">
-                {product.price} EUR
+                {product.data.price} EUR
             </div>
             <div>
-                {product.description}
+                {product.data.description}
             </div>
 
         </div>
